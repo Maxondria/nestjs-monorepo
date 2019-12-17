@@ -1,0 +1,59 @@
+scripts:
+  build:
+    default: >-
+      node_modules/.bin/concurrently
+      "nps build.sample"
+      "nps build.sample2"
+    sample:
+      script: rimraf dist/sample && nest build sample
+    sample2:
+      script: rimraf dist/sample2 && nest build sample2
+
+  test:
+    default: jest
+    watch:
+      script: jest --watch
+    cov:
+      script: jest --coverage
+    debug:
+      script: node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand
+    e2e:
+      script: >-
+        node_modules/.bin/concurrently 
+        "jest --config ./apps/sample/test/jest-e2e.json" 
+        "jest --config ./apps/sample2/test/jest-e2e.json"
+
+  sample:
+    default: nest start sample
+    watch:
+      script: nest start sample -w
+    debug:
+      script: nest start sample -d -w
+
+  sample2:
+    default: nest start sample2
+    watch:
+      script: nest start sample2 -w
+    debug:
+      script: nest start sample2 -d -w
+
+  start:
+    default: >-
+      node_modules/.bin/concurrently 
+      "nps sample" 
+      "nps sample2"
+    dev:
+      script: >-
+        node_modules/.bin/concurrently 
+        "nps sample.watch" 
+        "nps sample2.watch"
+    debug:
+      script: >-
+        node_modules/.bin/concurrently 
+        "nps sample.debug" 
+        "nps sample2.debug"
+    prod:
+      script: >-
+        node_modules/.bin/concurrently 
+        "node dist/apps/sample/main" 
+        "node dist/apps/sample2/main"
